@@ -1,7 +1,6 @@
 import argparse
 import pickle
 import torch
-import tarfile
 import clipscore
 import numpy as np
 from tqdm import tqdm

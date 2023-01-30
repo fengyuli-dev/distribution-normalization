@@ -300,117 +300,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             compute_retrieval(model, images, refs, device)
             return
 
-        if args.retrieval_ablations == 'True':
-            # retrieval_ckpts = Path(Path.cwd(), "saved_checkpoints")
-            # retrieval_ckpts = Path("/share/cuvl/yifei/clip-metric/clip-training/saved_checkpoints/")
-            # retrieval_ckpts = Path("/share/cuvl/image_caption_metrics/clip-training/retrieval_ablation_checkpoints")
-            t2i_dic = {"Epochs Finetuned": [],
-                        "CLIP Top1": [], "CLIP Top5": [], "CLIP Top10": [],
-                        "CLIP-DN Top1": [], "CLIP-DN Top5": [], "CLIP-DN Top10": [],
-                        "CLIP Top1 STD": [], "CLIP Top5 STD": [], "CLIP Top10 STD": [],
-                        "CLIP-DN Top1 STD": [], "CLIP-DN Top5 STD": [], "CLIP-DN Top10 STD": []}
-
-            i2t_dic = {"Epochs Finetuned": [], 
-                        "CLIP Top1": [], "CLIP Top5": [], "CLIP Top10": [],
-                        "CLIP-DN Top1": [], "CLIP-DN Top5": [], "CLIP-DN Top10": [],
-                        "CLIP Top1 STD": [], "CLIP Top5 STD": [], "CLIP Top10 STD": [],
-                        "CLIP-DN Top1 STD": [], "CLIP-DN Top5 STD": [], "CLIP-DN Top10 STD": []}
-
-            num_epochs = 0
-
-            ckpt_paths = [Path(f"/share/cuvl/image_caption_metrics/clip-training/retrieval_ablation_checkpoints_{i+1}/") for i in range(5)]
-            print(ckpt_paths)
-            ckpts_1 = [ckpt for ckpt in ckpt_paths[0].glob("*.pt")]
-            sorted_ckpts_1 = sorted(ckpts_1, key=lambda x: int(x.name.split("_")[1].split("_")[0]))
-            ckpts_2 = [ckpt for ckpt in ckpt_paths[1].glob("*.pt")]
-            sorted_ckpts_2 = sorted(ckpts_2, key=lambda x: int(x.name.split("_")[1].split("_")[0]))
-            ckpts_3 = [ckpt for ckpt in ckpt_paths[2].glob("*.pt")]
-            sorted_ckpts_3 = sorted(ckpts_3, key=lambda x: int(x.name.split("_")[1].split("_")[0]))
-            ckpts_4 = [ckpt for ckpt in ckpt_paths[3].glob("*.pt")]
-            sorted_ckpts_4 = sorted(ckpts_4, key=lambda x: int(x.name.split("_")[1].split("_")[0]))
-            ckpts_5 = [ckpt for ckpt in ckpt_paths[4].glob("*.pt")]
-            sorted_ckpts_5 = sorted(ckpts_5, key=lambda x: int(x.name.split("_")[1].split("_")[0]))
-
-            ckpts_combined = list(zip(sorted_ckpts_1, sorted_ckpts_2, sorted_ckpts_3,
-                                    sorted_ckpts_4, sorted_ckpts_5))
-
-            for i in trange(50):
-            # for ckpt in tqdm(sorted_ckpts, unit_scale=True, maxinterval=len(sorted_ckpts)):
-                num_epochs += 1
-                t2i_dic["Epochs Finetuned"].append(num_epochs)
-                i2t_dic["Epochs Finetuned"].append(num_epochs)
-                for model_name in ["clip_dn", "regular"]:
-                    is_dn = (model_name == "clip_dn")
-                    if is_dn:
-                        model = clipscore.FirstCLIPScore()
-                    else:
-                        model = clipscore.OriginalCLIPScore()
-                    # model.clip = torch.load(ckpt)
-                    # collect mean and std of 5 runs
-                    
-                    t2i_top1_scores, i2t_top1_scores = [], []
-                    t2i_top5_scores, i2t_top5_scores = [], []
-                    t2i_top10_scores, i2t_top10_scores = [], []
-                    for j in range(5):
-                        ckpt = ckpts_combined[i][j]
-                        model.clip.load_state_dict(torch.load(ckpt)["model_state_dict"])
-                        model = model.to(device)
-
-                        t2i_scores, i2t_scores = compute_retrieval(model, images, refs, device, verbose=False)
-                        t2i_top1_scores.append(t2i_scores[0])
-                        t2i_top5_scores.append(t2i_scores[1])
-                        t2i_top10_scores.append(t2i_scores[2])
-                        i2t_top1_scores.append(i2t_scores[0])
-                        i2t_top5_scores.append(i2t_scores[1])
-                        i2t_top10_scores.append(i2t_scores[2])
-
-                    t2i_top1_scores, i2t_top1_scores = np.array([t2i_top1_scores]), np.array([i2t_top1_scores])
-                    t2i_top5_scores, i2t_top5_scores = np.array([t2i_top5_scores]), np.array([i2t_top5_scores])
-                    t2i_top10_scores, i2t_top10_scores = np.array([t2i_top10_scores]), np.array([i2t_top10_scores])
-
-                    print(t2i_top1_scores, np.mean(t2i_top1_scores), np.std(t2i_top1_scores))
-                    print(t2i_top5_scores, np.mean(t2i_top5_scores), np.std(t2i_top5_scores))
-                    print(t2i_top10_scores, np.mean(t2i_top10_scores), np.std(t2i_top10_scores))
-
-                    model_name = "CLIP-DN" if is_dn else "CLIP"
-                    t2i_dic[f"{model_name} Top1"].append(np.mean(t2i_top1_scores))
-                    t2i_dic[f"{model_name} Top1 STD"].append(np.std(t2i_top1_scores))
-                    t2i_dic[f"{model_name} Top5"].append(np.mean(t2i_top5_scores))
-                    t2i_dic[f"{model_name} Top5 STD"].append(np.std(t2i_top5_scores))
-                    t2i_dic[f"{model_name} Top10"].append(np.mean(t2i_top10_scores))
-                    t2i_dic[f"{model_name} Top10 STD"].append(np.std(t2i_top10_scores))
-                    i2t_dic[f"{model_name} Top1"].append(np.mean(i2t_top1_scores))
-                    i2t_dic[f"{model_name} Top1 STD"].append(np.std(i2t_top1_scores))
-                    i2t_dic[f"{model_name} Top5"].append(np.mean(i2t_top5_scores))
-                    i2t_dic[f"{model_name} Top5 STD"].append(np.std(i2t_top5_scores))
-                    i2t_dic[f"{model_name} Top10"].append(np.mean(i2t_top10_scores))
-                    i2t_dic[f"{model_name} Top10 STD"].append(np.std(t2i_top10_scores))
-
-                    # if is_dn:
-                    #     t2i_dic["CLIP-DN Top1"].append(t2i_scores[0])
-                    #     t2i_dic["CLIP-DN Top5"].append(t2i_scores[1])
-                    #     t2i_dic["CLIP-DN Top10"].append(t2i_scores[2])
-                    #     i2t_dic["CLIP-DN Top1"].append(i2t_scores[0])
-                    #     i2t_dic["CLIP-DN Top5"].append(i2t_scores[1])
-                    #     i2t_dic["CLIP-DN Top10"].append(i2t_scores[2])
-                    # else:
-                    #     t2i_dic["CLIP Top1"].append(t2i_scores[0])
-                    #     t2i_dic["CLIP Top5"].append(t2i_scores[1])
-                    #     t2i_dic["CLIP Top10"].append(t2i_scores[2])
-                    #     i2t_dic["CLIP Top1"].append(i2t_scores[0])
-                    #     i2t_dic["CLIP Top5"].append(i2t_scores[1])
-                    #     i2t_dic["CLIP Top10"].append(i2t_scores[2])
-
-                t2i_df = pd.DataFrame(t2i_dic)
-                i2t_df = pd.DataFrame(i2t_dic)
-
-                t2i_save_path = Path(Path.cwd(), "retrieval_ablation_data/t2i_backup.csv")
-                i2t_save_path = Path(Path.cwd(), "retrieval_ablation_data/i2t_backup.csv")
-                t2i_df.to_csv(t2i_save_path)
-                print(f"Saved to {t2i_save_path}")
-                i2t_df.to_csv(i2t_save_path)
-                print(f"Saved to {i2t_save_path}")
-
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
         hc_acc, hi_acc, hm_acc, mm_acc, mean = \
@@ -437,34 +326,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
 
     if model_name == 'first' and args.stage == 'train':
         torch.save(model, 'FirstCLIP.pt')
-
-def graph_retrieval_ablation(reg_scores=[], dn_scores=[], num_epochs=0, title=""):
-    reg_scores = np.array(reg_scores)
-    reg_scores = np.reshape(reg_scores, (reg_scores.shape[0], 1))
-    dn_scores = np.array(dn_scores)
-    dn_scores = np.reshape(dn_scores, (dn_scores.shape[0], 1))
-    epochs = np.arange(num_epochs)
-    epochs = np.reshape(epochs, (epochs.shape[0], 1))
-    all_scores = np.hstack((epochs, reg_scores, dn_scores))
-    df = pd.DataFrame(all_scores, columns=["Epochs Finetuned", "CLIP", "CLIP-DN"])
-    retrieval_plot = sns.lineplot(x="Epochs Finetuned", y="value", hue="variable", 
-                    data=pd.melt(df, id_vars=["Epochs Finetuned"], value_vars=["CLIP", "CLIP-DN"]))
-    retrieval_plot.set(ylabel='Accuracy')
-    plt.title(title)
-    plt.legend(title="Model Type", loc="upper right")
-
-    # plt.plot(x_axis, reg_scores, '-', c="orange", label="CLIP")
-    # plt.plot(x_axis, dn_scores, '-', c="blue", label="CLIP-DN")
-    # plt.xlabel("Finetuned Epochs")
-    # plt.ylabel("Retrieval Accuracy")
-    # handles, labels = plt.gca().get_legend_handles_labels()
-    # by_label = dict(zip(labels, handles))   
-    # plt.legend(by_label.values(), by_label.keys())
-
-    plt_save_path = Path(Path.cwd(), "plots", f"{title}.png")
-    plt.savefig(plt_save_path)
-    plt.clf()
-    print(f"Plots saved to {plt_save_path}")
 
 @progress_alerts(func_name="compute metrics")
 def main(args):
@@ -504,8 +365,6 @@ if __name__ == '__main__':
     parser.add_argument('--stage', default='eval',
                         choices=['train', 'eval'], type=str)
     parser.add_argument('--retrieval', default='False',
-                        choices=['False', 'True'], type=str)
-    parser.add_argument('--retrieval_ablations', default='False',
                         choices=['False', 'True'], type=str)
     args = parser.parse_args()
     main(args)
