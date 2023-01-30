@@ -211,44 +211,6 @@ def extract_all_images(images, model, device, batch_size=64, num_workers=1, norm
     return all_image_features
 
 
-class BatchCLIP(nn.Module):
-    def __init__(self,
-                 batch_size: int = 1,
-                 device="cuda") -> None:
-        super(BatchCLIP, self).__init__()
-        self.clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-        self.embedding_fc = orthogonal(nn.Linear(512, batch_size, bias=False))
-        self.text_embedding_fc = orthogonal(
-            nn.Linear(512, batch_size, bias=False))
-        self.batch_size = batch_size
-        self.output_fc = nn.Sequential(nn.Linear(
-            batch_size*2+1, 1, bias=True))
-        self.sf = nn.Softmax(dim=-1)
-        self.device = device
-
-    def train_forward(self, images, text):
-        image_features = images
-        text_features = text
-        sim = torch.sum(image_features * text_features, dim=1).reshape(-1, 1)
-        batch_sim = self.embedding_fc(image_features)
-        batch_sim_text = self.text_embedding_fc(text_features)
-        sf_sim = torch.cat([sim, batch_sim, batch_sim_text], dim=1)
-        sf_sim = self.output_fc(sf_sim)
-        return sf_sim
-
-    def forward(self, images, text):
-        image_features = self.clip.get_image_features(images)
-        text_features = self.clip.get_text_features(text)
-        image_features = F.normalize(image_features)
-        text_features = F.normalize(text_features)
-        sim = torch.sum(image_features * text_features, dim=1).reshape(-1, 1)
-        batch_sim = self.embedding_fc(image_features)
-        batch_sim_text = self.text_embedding_fc(text_features)
-        sf_sim = torch.cat([sim, batch_sim, batch_sim_text], dim=1)
-        sf_sim = self.output_fc(sf_sim)
-        return sf_sim
-
-
 class OriginalCLIPScore(nn.Module):
 
     def __init__(self, device="cuda") -> None:

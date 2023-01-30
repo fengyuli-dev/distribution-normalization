@@ -263,8 +263,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             # model = torch.load('FirstCLIP.pt')
             # model.image_constant = model.image_constant.to(device)
             # model.text_constant = model.text_constant.to(device)
-        elif model_name == 'batch':
-            model = clipscore.BatchCLIP()
         elif model_name == 'regular' or model_name == 'regular_ref':
             model = clipscore.OriginalCLIPScore()
         model.to(device)
@@ -274,25 +272,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             ckpt_name = "flickr30Clip"
         print(f"Loaded ckpt {ckpt_name}")
         model.clip = torch.load(f'{ckpt_name}.pt')
-
-        if args.stage == 'train' and model_name == 'batch':
-            cutoff = 10000
-            model.train()
-            clipscore.train_clip_score_fast(
-                model, images[:cutoff], candidates[:cutoff], human_scores[:cutoff], device, max_iter=20, learning_rate=1e-2)
-            # images = images[cutoff:]
-            # candidates = candidates[cutoff:]
-            # human_scores = human_scores[cutoff:]
-            model.eval()
-
-            # save the model
-            if model_name == 'batch':
-                torch.save({'model_state_dict': model.state_dict(), },
-                        'BatchCLIP.pt')                           
-
-        # load the model
-        if model_name == 'batch':
-            model.load_state_dict(torch.load('BatchCLIP.pt')['model_state_dict'])
 
         if args.retrieval == 'True':
             print('====> Doing Retrieval')
@@ -360,7 +339,7 @@ if __name__ == '__main__':
     parser.add_argument('--dataset', default="flickr8k-expert", choices=["flickr8k-expert",
                                                                          "thumb", "pascal", "composite", "flickr8k-cf", "flickr30k", "mscoco"], type=str)
     parser.add_argument('--model', default='first',
-                        choices=['batch', 'regular', 'first', 'regular_ref', 'first_ref', 'bleu1', 'bleu4', 'cider'], type=str)
+                        choices=['regular', 'first', 'regular_ref', 'first_ref', 'bleu1', 'bleu4', 'cider'], type=str)
     parser.add_argument('--stage', default='eval',
                         choices=['train', 'eval'], type=str)
     parser.add_argument('--retrieval', default='False',
