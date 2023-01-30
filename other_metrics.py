@@ -1,17 +1,12 @@
 '''
-Automatic generation evaluation metrics wrapper
+Automatic generation evaluation metrics wrapper for BLEU and CIDEr.
 The most useful function here is
 get_all_metrics(refs, cands)
 Source: https://github.com/jmhessel/clipscore/blob/main/generation_eval_utils.py
 '''
 from pycocoevalcap.tokenizer.ptbtokenizer import PTBTokenizer
-from pycocoevalcap.spice.spice import Spice
-from pycocoevalcap.meteor.meteor import Meteor
 from pycocoevalcap.bleu.bleu import Bleu
 from pycocoevalcap.cider.cider import Cider
-from pycocoevalcap.rouge.rouge import Rouge
-from pycocoevalcap.spice.spice import Spice
-
 
 
 def get_all_metrics(refs, cands, return_per_cap=True):
@@ -19,7 +14,7 @@ def get_all_metrics(refs, cands, return_per_cap=True):
     names = []
 
     pycoco_eval_cap_scorers = [(Bleu(1), 'bleu1'),
-                               (Bleu(4), 'bleu4'),     
+                               (Bleu(4), 'bleu4'),
                                (Cider(), 'cider')]
 
     for scorer, name in pycoco_eval_cap_scorers:
@@ -36,8 +31,9 @@ def get_all_metrics(refs, cands, return_per_cap=True):
 
 def tokenize(refs, cands):
     tokenizer = PTBTokenizer()
-    refs = {idx: [{'caption':r} for r in c_refs] for idx, c_refs in enumerate(refs)}
-    cands = {idx: [{'caption':c}] for idx, c in enumerate(cands)}
+    refs = {idx: [{'caption': r} for r in c_refs]
+            for idx, c_refs in enumerate(refs)}
+    cands = {idx: [{'caption': c}] for idx, c in enumerate(cands)}
     refs = tokenizer.tokenize(refs)
     cands = tokenizer.tokenize(cands)
     return refs, cands
@@ -45,7 +41,6 @@ def tokenize(refs, cands):
 
 def pycoco_eval(scorer, refs, cands):
     '''
-    scorer is assumed to have a compute_score function.
     refs is a list of lists of strings.
     cands is a list of predictions.
     '''

@@ -20,7 +20,6 @@ import other_metrics
 from tqdm import tqdm, trange
 from clip_retrieval import compute_retrieval
 from clipscore import Pascal50sDataset
-from slack_logging import progress_alerts
 
 
 IMAGE_CAPTION_METRICS = Path('/share/cuvl/image_caption_metrics')
