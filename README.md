@@ -1,1 +1,1 @@
-# distribution-normalization
+# Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models
