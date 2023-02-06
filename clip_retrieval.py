@@ -30,19 +30,24 @@ def compute_retrieval(model, images, refs, device, verbose=True):
             txt_labels[i].append(i*len(rs) + j)
 
     image_features = extract_all_images(images, model.clip, device).to(device)
-    text_features = extract_all_captions(all_refs, model.clip, device).to(device)
-    if isinstance(model, clipscore.FirstCLIPScore):
+    text_features = extract_all_captions(
+        all_refs, model.clip, device).to(device)
+    if isinstance(model, clipscore.DNCLIPScore):
         print("Using FirstClip")
-        image_features = image_features - 0.25*torch.mean(image_features, dim=0)
+        image_features = image_features - 0.25 * \
+            torch.mean(image_features, dim=0)
         text_features = text_features - 0.25*torch.mean(text_features, dim=0)
 
     img_labels = torch.Tensor(img_labels).long()
     t2i_sim = (text_features @ image_features.T).cpu()
     if "jlr" in str(Path.cwd()):
         num_classes_img = t2i_sim.size(1)
-        i_top1 = Accuracy(top_k=1, task="multiclass", num_classes=num_classes_img)(t2i_sim, img_labels)
-        i_top5 = Accuracy(top_k=5, task="multiclass", num_classes=num_classes_img)(t2i_sim, img_labels)
-        i_top10 = Accuracy(top_k=10, task="multiclass", num_classes=num_classes_img)(t2i_sim, img_labels)
+        i_top1 = Accuracy(top_k=1, task="multiclass",
+                          num_classes=num_classes_img)(t2i_sim, img_labels)
+        i_top5 = Accuracy(top_k=5, task="multiclass",
+                          num_classes=num_classes_img)(t2i_sim, img_labels)
+        i_top10 = Accuracy(top_k=10, task="multiclass",
+                           num_classes=num_classes_img)(t2i_sim, img_labels)
     else:
         i_top1 = Accuracy(top_k=1)(t2i_sim, img_labels)
         i_top5 = Accuracy(top_k=5)(t2i_sim, img_labels)

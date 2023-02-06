@@ -1,6 +1,3 @@
-'''
-Computes metrics for Flickr8K.
-'''
 from pathlib import Path
 import pandas as pd
 import argparse

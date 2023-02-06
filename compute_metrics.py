@@ -47,6 +47,7 @@ def composite_data_cleaning(dataframe: pd.DataFrame) -> pd.DataFrame:
     dataframe = dataframe.dropna()
     return dataframe
 
+
 def compute_human_correlation(model_name, input_json, image_directory, dataset='flickr8k-expert', tauvariant='c', args=None):
     images = []
     candidates = []
@@ -256,10 +257,10 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
 
     if model_name in ['bleu4', 'bleu1', 'cider']:
         pass
-   
+
     else:
         if model_name == 'first' or model_name == 'first_ref':
-            model = clipscore.FirstCLIPScore()
+            model = clipscore.DNCLIPScore()
             # model = torch.load('FirstCLIP.pt')
             # model.image_constant = model.image_constant.to(device)
             # model.text_constant = model.text_constant.to(device)
@@ -285,9 +286,10 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         # print(
         #     f"CLIPScore Pascal: {model_name=}: {hc_acc=:.3f}, {hi_acc=:.3f}, {hm_acc=:.3f}, {mm_acc=:.3f}, {mean=:.3f}")
     else:
-        if model_name in ['bleu1', 'bleu4', 'cider']: 
+        if model_name in ['bleu1', 'bleu4', 'cider']:
             per_instance_image_text = []
-            results = other_metrics.get_all_metrics(refs, candidates)[model_name]
+            results = other_metrics.get_all_metrics(
+                refs, candidates)[model_name]
             if model_name == 'bleu4':
                 results = results[-1]
             per_instance_image_text = results
@@ -295,7 +297,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         elif not 'ref' in model_name:
             # print('Using get clip score')
             _, per_instance_image_text, candidate_feats = clipscore.get_clip_score(
-                model, images, candidates, device, refs)    
+                model, images, candidates, device, refs)
         else:
             _, per_instance_image_text, candidate_feats = clipscore.get_clip_score_ref(
                 model, images, candidates, refs, device)
@@ -304,6 +306,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
 
     if model_name == 'first' and args.stage == 'train':
         torch.save(model, 'FirstCLIP.pt')
+
 
 @progress_alerts(func_name="compute metrics")
 def main(args):
@@ -333,6 +336,7 @@ def main(args):
     elif args.dataset == 'mscoco':
         compute_human_correlation(
             args.model, None, None, 'mscoco', tauvariant='c', args=args)
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

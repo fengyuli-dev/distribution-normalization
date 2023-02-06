@@ -67,7 +67,7 @@ def zeroshot_prediction(model, images, captions, labels, device, args):
     image_embeddings = F.normalize(image_embeddings)
     caption_embeddings = F.normalize(caption_embeddings)
     num_classes = caption_embeddings.size(0)
-    if isinstance(model, clipscore.OriginalCLIPScore) or isinstance(model, clipscore.FirstCLIPScore):
+    if isinstance(model, clipscore.OriginalCLIPScore) or isinstance(model, clipscore.DNCLIPScore):
         sims = []
         for i in range(0, image_embeddings.size(0), 32):
             sims.append(image_embeddings[i:i+32] @ caption_embeddings.T)

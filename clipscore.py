@@ -7,7 +7,6 @@ Code for CLIPScore (https://arxiv.org/abs/2104.08718)
   year={2021}
 }
 '''
-import argparse
 import clip
 import torch
 from PIL import Image
@@ -26,42 +25,6 @@ import scipy
 import collections
 import random
 import os
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        'candidates_json',
-        type=str,
-        help='Candidates json mapping from image_id --> candidate.')
-
-    parser.add_argument(
-        'image_dir',
-        type=str,
-        help='Directory of images, with the filenames as image ids.')
-
-    parser.add_argument(
-        '--references_json',
-        default=None,
-        help='Optional references json mapping from image_id --> [list of references]')
-
-    parser.add_argument(
-        '--compute_other_ref_metrics',
-        default=1,
-        type=int,
-        help='If references is specified, should we compute standard reference-based metrics?')
-
-    parser.add_argument(
-        '--save_per_instance',
-        default=None,
-        help='if set, we will save per instance clipscores to this file')
-
-    args = parser.parse_args()
-
-    if isinstance(args.save_per_instance, str) and not args.save_per_instance.endswith('.json'):
-        print('if you\'re saving per-instance, please make sure the filepath ends in json.')
-        quit()
-    return args
 
 
 class CLIPCapDataset(torch.utils.data.Dataset):
@@ -225,7 +188,7 @@ class OriginalCLIPScore(nn.Module):
         return 2.5 * torch.maximum(similarity, torch.zeros_like(similarity))
 
 
-class FirstCLIPScore(nn.Module):
+class DNCLIPScore(nn.Module):
 
     def __init__(self, device="cuda") -> None:
         super().__init__()
@@ -259,7 +222,7 @@ def get_clip_score(model, images, captions, device, refs=None):
     - a list of strings specifying filepaths for images
     - a precomputed, ordered matrix of image features
     # '''
-    if isinstance(model, FirstCLIPScore):
+    if isinstance(model, DNCLIPScore):
         image_features = torch.Tensor(extract_all_images(
             images, model.clip, device, num_workers=1)).cpu()
         model.image_constant = torch.mean(image_features, dim=0).to(device)
@@ -291,14 +254,11 @@ def get_full_clip_score(model, images, captions, device):
     images can either be:
     - a list of strings specifying filepaths for images
     - a precomputed, ordered matrix of image features
-    # '''
+    '''
     image_features = torch.Tensor(extract_all_images(
         images, model.clip, device, num_workers=1)).to(device)
     text_features = torch.Tensor(extract_all_captions(
         captions, model.clip, device, num_workers=1)).to(device)
-    # text_features = text_features - torch.mean(text_features, dim=0)
-    # print(image_features.size())
-
     num_samples = len(image_features)
     similarities = torch.sum(
         image_features * text_features, dim=1)
@@ -319,8 +279,8 @@ def get_clip_score_ref(model, images, captions, references, device):
     images can either be:
     - a list of strings specifying filepaths for images
     - a precomputed, ordered matrix of image features
-    # '''
-    if isinstance(model, FirstCLIPScore):
+    '''
+    if isinstance(model, DNCLIPScore):
         image_features = torch.Tensor(extract_all_images(
             images, model.clip, device, num_workers=1)).cpu()
         model.image_constant = torch.mean(image_features, dim=0).to(device)
@@ -364,102 +324,12 @@ def get_clip_score_ref(model, images, captions, references, device):
 
     per = np.array(per)
     text_per = np.array(text_per)
-    if isinstance(model, FirstCLIPScore):
+    if isinstance(model, DNCLIPScore):
         per = per + text_per
     else:
         per = 2 * per * text_per / (per + text_per)
 
     return np.mean(per), per, captions
-
-
-def train_clip_score(model, images, captions, human_scores, device,
-                     max_iter=20, learning_rate=2e-5):
-    # image_data = torch.utils.data.DataLoader(
-    #     CLIPImageDataset(images),
-    #     batch_size=64, num_workers=1, shuffle=False)
-    # text_data = torch.utils.data.DataLoader(
-    #     CLIPCapDataset(captions, human_scores),
-    #     batch_size=64, num_workers=1, shuffle=False)
-    data_loader = torch.utils.data.DataLoader(
-        CLIPImageCaptionDataset(images, captions, human_scores),
-        batch_size=64, num_workers=1, shuffle=True)
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam([p for p in model.embedding_fc.parameters()] +
-                                 [p for p in model.output_fc.parameters()] +
-                                 [p for p in model.text_embedding_fc.parameters()], lr=learning_rate)
-    for i in tqdm.tqdm(range(max_iter)):
-        losses = []
-        for d in data_loader:
-            images = d['image'].to(device)
-            text = d['caption'].to(device)
-            scores = d['human_score'].to(device).float().flatten()
-            pred = model(images, text).flatten()
-            loss = criterion(pred, scores)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            losses.append(loss.item())
-        print(f"for iteration {i}: loss: {np.mean(losses)}")
-    return model
-
-
-class CLIPJointDataset(torch.utils.data.Dataset):
-    def __init__(self, images, captions, human_scores=None, prefix='A photo depicts'):
-        self.images = images
-        self.captions = captions
-        self.human_scores = None
-        if human_scores is not None:
-            self.human_scores = human_scores
-        self.prefix = prefix
-        if self.prefix[-1] != ' ':
-            self.prefix += ' '
-
-    def __getitem__(self, idx):
-        if self.human_scores is not None:
-            return {'caption': self.captions[idx], 'image': self.images[idx],
-                    'human_score': self.human_scores[idx]}
-        else:
-            return {'caption': self.captions[idx], 'image': self.images[idx]}
-
-    def __len__(self):
-        return len(self.images)
-
-
-def train_clip_score_fast(model, images, captions, human_scores, device,
-                          max_iter=20, learning_rate=1e-1):
-    """
-    Faster training loop by precomputing clip features
-    """
-    image_features = torch.Tensor(extract_all_images(
-        images, model.clip, device, num_workers=1)).cpu()
-    text_features = torch.Tensor(extract_all_captions(
-        captions, model.clip, device, num_workers=1)).cpu()
-    human_scores = torch.Tensor(human_scores).reshape(-1, 1).cpu()
-    # device = "cpu"
-    # model.to(device)
-    data_loader = torch.utils.data.DataLoader(
-        CLIPJointDataset(image_features, text_features, human_scores),
-        batch_size=64, num_workers=1, shuffle=True)
-    criterion = nn.MSELoss()
-    optimizer = torch.optim.Adam([p for p in model.embedding_fc.parameters()] +
-                                 [p for p in model.output_fc.parameters()] +
-                                 [p for p in model.text_embedding_fc.parameters()], lr=learning_rate)
-    for i in tqdm.tqdm(range(max_iter)):
-        losses = []
-        for d in data_loader:
-            images = d['image'].to(device)
-            text = d['caption'].to(device)
-            scores = d['human_score'].to(device).float().flatten()
-            pred = model.train_forward(images, text).flatten()
-            loss = criterion(pred, scores)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            losses.append(loss.item())
-
-        # wandb.log({'loss':np.mean(losses)})
-        print(f"for iteration {i}: loss: {np.mean(losses)}")
-    return model
 
 
 class Pascal50sDataset(torch.utils.data.Dataset):
@@ -570,7 +440,7 @@ def get_clip_score_pascal(model, device, get_ref=False, gt_refs=None):
     ds = Pascal50sDataset()
     data_loader = torch.utils.data.DataLoader(
         ds, batch_size=64, num_workers=1, shuffle=True)
-    if isinstance(model, FirstCLIPScore):
+    if isinstance(model, DNCLIPScore):
         images = [os.path.join(os.path.join(
             ds.root, "images"), d[0][0]) for d in ds.data]
         image_features = torch.Tensor(extract_all_images(
@@ -630,7 +500,7 @@ def get_clip_score_pascal(model, device, get_ref=False, gt_refs=None):
                         b_text_per.append(np.max(all_sims))
 
             a_text_per, b_text_per = np.array(a_text_per), np.array(b_text_per)
-            if isinstance(model, FirstCLIPScore):
+            if isinstance(model, DNCLIPScore):
                 a_scores = a_scores + a_text_per
                 b_scores = b_scores + b_text_per
             else:
