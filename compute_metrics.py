@@ -1,5 +1,5 @@
 '''
-Computes metrics for Flickr8K.
+Evaluate model performance as an image captioning metric.
 '''
 from pathlib import Path
 import seaborn as sns
@@ -35,27 +35,12 @@ if device == 'cpu':
     warnings.warn('Running on CPU.')
 
 
-def composite_data_cleaning(dataframe: pd.DataFrame) -> pd.DataFrame:
-    '''
-    Cleans the composite thoroughness dataset.
-    '''
-    columns = ['Input.image_url']
-    for i in range(1, 5):
-        columns.append(f'Input.text{i}')
-        columns.append(f'Answer.Q{i}Answer')
-    dataframe = dataframe.filter(columns)
-    dataframe = dataframe.dropna()
-    return dataframe
-
-
 def compute_human_correlation(model_name, input_json, image_directory, dataset='flickr8k-expert', tauvariant='c', args=None):
     images = []
     candidates = []
     human_scores = []
     refs = []
 
-    # used for debugging
-    counter = 0
 
     # load flickr8k-expert dataset
     if dataset == 'flickr8k-expert':
@@ -98,108 +83,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             ds.root, "images"), d[0][0]) for d in ds.data]
         refs = ds.references
 
-    # load composite dataset
-    elif dataset == 'composite':
-        image_caption_pairs_30k_correctness = pd.read_csv(
-            f'{COMPOSITE_DIR}/30k_correctness.csv', sep=';')
-        image_caption_pairs_30k_correctness = composite_data_cleaning(
-            image_caption_pairs_30k_correctness)
-        image_caption_pairs_30k_thoroughness = pd.read_csv(
-            f'{COMPOSITE_DIR}/30k_throughness.csv', sep=';')
-        image_caption_pairs_30k_thoroughness = composite_data_cleaning(
-            image_caption_pairs_30k_thoroughness)
-        for _, row in image_caption_pairs_30k_correctness.iterrows():
-            image_dir = os.path.basename(row['Input.image_url'])
-            ref = [row['Input.text1'], row['Input.text2'],
-                   row['Input.text3'], row['Input.text4']]
-            for i in range(4):
-                images.append(f'{FLICKR30K_DIR}/flickr30k_images/{image_dir}')
-                candidates.append(row[f'Input.text{i + 1}'])
-                human_scores.append(row[f'Answer.Q{i + 1}Answer'])
-                refs.append(ref)
-        # for _, row in image_caption_pairs_30k_thoroughness.iterrows():
-        #     image_dir_long = row['Input.image_url']
-        #     image_dir = os.path.basename(image_dir_long)
-        #     ref = [row['Input.text1'], row['Input.text2'], row['Input.text3'], row['Input.text4']]
-        #     for i in range(4):
-        #         images.append(f'{FLICKR30K_DIR}/flickr30k_images/{image_dir}')
-        #         row_correctness = image_caption_pairs_30k_correctness.loc[
-        #             image_caption_pairs_30k_correctness['Input.image_url'] == image_dir_long].to_numpy()
-        #         if len(row_correctness) == 0:
-        #             break
-        #         candidates.append(row[f'Input.text{i + 1}'])
-        #         human_scores.append(
-        #             (float(row[f'Answer.Q{i + 1}Answer']) + float(row_correctness[0][i * 2 + 2])))
-        #         refs.append(ref)
-
-        image_caption_pairs_coco_correctness = pd.read_csv(
-            f'{COMPOSITE_DIR}/coco_correctness.csv', sep=';')
-        image_caption_pairs_coco_correctness = composite_data_cleaning(
-            image_caption_pairs_coco_correctness)
-        image_caption_pairs_coco_thoroughness = pd.read_csv(
-            f'{COMPOSITE_DIR}/coco_throughness.csv', sep=';')
-        image_caption_pairs_coco_thoroughness = composite_data_cleaning(
-            image_caption_pairs_coco_thoroughness)
-        for _, row in image_caption_pairs_coco_correctness.iterrows():
-            image_dir = os.path.basename(row['Input.image_url'])
-            ref = [row['Input.text1'], row['Input.text2'],
-                   row['Input.text3'], row['Input.text4']]
-            for i in range(4):
-                images.append(f'{MSCOCO_DIR}/val2014/{image_dir}')
-                candidates.append(row[f'Input.text{i + 1}'])
-                human_scores.append(row[f'Answer.Q{i + 1}Answer'])
-                refs.append(ref)
-        # for _, row in image_caption_pairs_coco_thoroughness.iterrows():
-        #     image_dir_long = row['Input.image_url']
-        #     image_dir = os.path.basename(image_dir_long)
-        #     ref = [row['Input.text1'], row['Input.text2'], row['Input.text3'], row['Input.text4']]
-        #     for i in range(4):
-        #         images.append(f'{MSCOCO_DIR}/val2014/{image_dir}')
-        #         row_correctness = image_caption_pairs_coco_correctness.loc[
-        #             image_caption_pairs_coco_correctness['Input.image_url'] == image_dir_long].to_numpy()
-        #         if row_correctness.size == 0:
-        #             break
-        #         # print(row_correctness[0][i * 2 + 2])
-        #         candidates.append(row[f'Input.text{i + 1}'])
-        #         human_scores.append(
-        #             (float(row[f'Answer.Q{i + 1}Answer']) + float(row_correctness[0][i * 2 + 2])))
-        #         refs.append(ref)
-
-        # flickr8k part of composite
-        image_caption_pairs_8k_correctness = pd.read_csv(
-            f'{COMPOSITE_DIR}/8k_correctness.csv', sep=';')
-        image_caption_pairs_8k_correctness = composite_data_cleaning(
-            image_caption_pairs_8k_correctness)
-        image_caption_pairs_8k_thoroughness = pd.read_csv(
-            f'{COMPOSITE_DIR}/8k_throughness.csv', sep=';')
-        image_caption_pairs_8k_thoroughness = composite_data_cleaning(
-            image_caption_pairs_8k_thoroughness)
-        for _, row in image_caption_pairs_8k_correctness.iterrows():
-            image_dir = os.path.basename(row['Input.image_url'])
-            ref = [row['Input.text1'], row['Input.text2'], row['Input.text3']]
-            for i in range(3):
-                images.append(f'{FLICKR8K_DIR}/Flicker8k_Dataset/{image_dir}')
-                candidates.append(row[f'Input.text{i + 1}'])
-                human_scores.append(row[f'Answer.Q{i + 1}Answer'])
-                refs.append(ref)
-        # for _, row in image_caption_pairs_8k_thoroughness.iterrows():
-        #     image_dir_long = row['Input.image_url']
-        #     image_dir = os.path.basename(image_dir_long)
-        #     ref = [row['Input.text1'], row['Input.text2'], row['Input.text3']]
-        #     for i in range(3):
-        #         images.append(f'{FLICKR8K_DIR}/Flicker8k_Dataset/{image_dir}')
-        #         row_correctness = image_caption_pairs_8k_correctness.loc[
-        #             image_caption_pairs_8k_correctness['Input.image_url'] == image_dir_long].to_numpy()
-        #         if row_correctness.size == 0:
-        #             break
-        #         # print(row_correctness[0][i * 2 + 2])
-        #         candidates.append(row[f'Input.text{i + 1}'])
-        #         # print(row_correctness)
-        #         human_scores.append(
-        #             (float(row[f'Answer.Q{i + 1}Answer']) + float(row_correctness[0][i * 2 + 2])) / 2)
-        #         refs.append(ref)
-        print(f'Loaded {len(images)} images')
-
     elif dataset == 'flickr8k-cf':
         with open(input_json, 'r') as fb:
             data = json.load(fb)
@@ -210,6 +93,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                 human_scores.append(float(d['rating']))
                 refs.append([' '.join(gt.split()) for gt in v['ground_truth']])
 
+    # load flickr30k dataset
     elif dataset == 'flickr30k':
         dataset_path = '/share/cuvl/image_caption_metrics/flickr30k/flickr30k-images'
         with open('/share/cuvl/image_caption_metrics/flickr30k_test.txt', 'r') as fb:
@@ -231,6 +115,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                         ref.append(' '.join(processed))
                 refs.append(ref)
 
+    # load mscoco dataset
     elif dataset == 'mscoco':
         with open('/share/cuvl/image_caption_metrics/MSCOCO_VAL2014/annotations/captions_val2014.json', 'r') as fb:
             caption_dicts = json.load(fb)['annotations']
@@ -251,8 +136,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                           str(image).rjust(12, '0')+'.jpg')
             refs.append(captions)
 
-    # images = images[:1000]
-    # refs = refs[:1000]
     print(len(images))
 
     if model_name in ['bleu4', 'bleu1', 'cider']:
@@ -261,9 +144,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
     else:
         if model_name == 'first' or model_name == 'first_ref':
             model = clipscore.DNCLIPScore()
-            # model = torch.load('FirstCLIP.pt')
-            # model.image_constant = model.image_constant.to(device)
-            # model.text_constant = model.text_constant.to(device)
         elif model_name == 'regular' or model_name == 'regular_ref':
             model = clipscore.OriginalCLIPScore()
         model.to(device)
@@ -283,8 +163,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         get_ref_score = "ref" in model_name
         hc_acc, hi_acc, hm_acc, mm_acc, mean = \
             clipscore.get_clip_score_pascal(model, device, get_ref_score)
-        # print(
-        #     f"CLIPScore Pascal: {model_name=}: {hc_acc=:.3f}, {hi_acc=:.3f}, {hm_acc=:.3f}, {mm_acc=:.3f}, {mean=:.3f}")
     else:
         if model_name in ['bleu1', 'bleu4', 'cider']:
             per_instance_image_text = []
