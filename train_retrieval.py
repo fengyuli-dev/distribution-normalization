@@ -15,7 +15,6 @@ from clipscore import Pascal50sDataset, CLIPImageCaptionDataset
 import torch.nn.functional as F
 from accelerate import Accelerator
 from transformers import CLIPModel
-from slack_logging import progress_alerts
 import tqdm
 
 
