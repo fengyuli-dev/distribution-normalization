@@ -1,5 +1,5 @@
 '''
-Computes metrics for Flickr8K.
+Compute zeroshot classifications using CLIP w/ and w/o distribution normalization
 '''
 from pathlib import Path
 import pandas as pd
