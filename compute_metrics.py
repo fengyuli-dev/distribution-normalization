@@ -186,7 +186,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         torch.save(model, 'FirstCLIP.pt')
 
 
-@progress_alerts(func_name="compute metrics")
 def main(args):
     print(f'{args.dataset} (Tau-c)')
     if args.dataset == 'flickr8k-expert':
