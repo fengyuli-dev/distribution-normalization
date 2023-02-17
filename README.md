@@ -47,7 +47,7 @@ Top-5 STD: 0.03878027945756912
 ## Replicate Retrieval results
 To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k, run
 ```
-> python compute_metrics.py --dataset flickr30k --model regular --retrieval True
+> python compute_metrics.py --dataset flickr30k --model regular --retrieval
 ...
 ====> Doing Retrieval
 
@@ -55,7 +55,7 @@ To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k
 
 To run retrieval experiments with CLIP + Distribution Normalization on the 1K test split of Flickr30k, run
 ```
-> python compute_metrics.py --dataset flickr30k --model first --retrieval True
+> python compute_metrics.py --dataset flickr30k --model first --retrieval
 ...
 ====> Doing Retrieval
 
