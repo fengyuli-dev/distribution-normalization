@@ -154,7 +154,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         print(f"Loaded ckpt {ckpt_name}")
         model.clip = torch.load(f'{ckpt_name}.pt')
 
-        if args.retrieval == 'True':
+        if args.retrieval:
             print('====> Doing Retrieval')
             compute_retrieval(model, images, refs, device)
             return
@@ -223,7 +223,6 @@ if __name__ == '__main__':
                         choices=['regular', 'first', 'regular_ref', 'first_ref', 'bleu1', 'bleu4', 'cider'], type=str)
     parser.add_argument('--stage', default='eval',
                         choices=['train', 'eval'], type=str)
-    parser.add_argument('--retrieval', default='False',
-                        choices=['False', 'True'], type=str)
+    parser.add_argument('--retrieval', action='store_true', default='False')
     args = parser.parse_args()
     main(args)
