@@ -5,6 +5,8 @@ This is code for our paper "Distribution Normalization: An Effortless Test-Time 
 ### Requirements
 Please see <code>requirements.txt</code> for dependencies.
 
+<code>pip install -r requirements.txt</code>
+
 ### Dataset
 Currently, [mscoco](https://cocodataset.org/#download), [flickr8k-expert](https://www.kaggle.com/datasets/sayanf/flickr8k), [flickr8k-cf](https://www.kaggle.com/datasets/sayanf/flickr8k), [imagenet1k](https://www.image-net.org/download.php), [cifar100](https://www.cs.toronto.edu/~kriz/cifar.html), [sun397](https://vision.princeton.edu/projects/2010/SUN/), and [stanford_cars](https://ai.stanford.edu/~jkrause/cars/car_dataset.html) are supported. Please download each dataset with the corresponding link.
 
