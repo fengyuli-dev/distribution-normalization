@@ -32,7 +32,7 @@ Top-5 Accuracy: 88.70000457763672
 Top-5 STD: 0.0
 ```
 
-To run zeroshot experiments with CLIP + Distribution Normalization on cifar100 (using 100 random validation samples to estimate distribution mean, repeat 5 times), run
+To run zeroshot experiments with CLIP + Distribution Normalization on cifar100 (using 100 random validation samples to estimate distribution mean, repeated 5 times), run
 ```
 > python compute_zeroshot.py --dataset cifar100 --num_samples 100 --num_experiments 5 --dn
 ...
@@ -42,4 +42,24 @@ Top-1 STD: 0.07419006526470184
 Top-5 Accuracy: 89.33399963378906
 Top-5 STD: 0.03878027945756912
 ```
+
+
+## Replicate Retrieval results
+To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k, run
+```
+> python compute_metrics.py --dataset flickr30k --model regular --retrieval True
+...
+====> Doing Retrieval
+
+```
+
+To run retrieval experiments with CLIP + Distribution Normalization on the 1K test split of Flickr30k, run
+```
+> python compute_metrics.py --dataset flickr30k --model first --retrieval True
+...
+====> Doing Retrieval
+
+```
+
+
 
