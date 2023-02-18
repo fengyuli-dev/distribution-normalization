@@ -61,5 +61,8 @@ To run retrieval experiments with CLIP + Distribution Normalization on the 1K te
 
 ```
 
+## Reproduce image captioning metric results
+TODO
+
 
 
