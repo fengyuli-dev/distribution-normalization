@@ -38,7 +38,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         data = {}
         with open(input_json) as f:
             data.update(json.load(f))
-        print('Loaded {} images'.format(len(data)))
         for k, v in list(data.items()):
             for human_judgement in v['human_judgement']:
                 if np.isnan(human_judgement['rating']):
@@ -48,6 +47,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                 candidates.append(' '.join(human_judgement['caption'].split()))
                 human_scores.append(human_judgement['rating'])
                 refs.append([' '.join(gt.split()) for gt in v['ground_truth']])
+        print('Loaded {} images'.format(len(images)))
 
     # load thumb dataset
     elif dataset == 'thumb':
@@ -132,13 +132,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
     elif model_name == 'regular' or model_name == 'regular_ref':
         model = clipscore.OriginalCLIPScore()
     model.to(device)
-    
-    if args.dataset == "mscoco":
-        ckpt_name = "cocoCLIP"
-    elif args.dataset == "flickr30k":
-        ckpt_name = "flickr30Clip"
-    print(f"Loaded ckpt {ckpt_name}")
-    model.clip = torch.load(f'{ckpt_name}.pt')
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
@@ -162,9 +155,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                 model, images, candidates, refs, device)
         print('CLIPScore Tau-{}: {:.3f}'.format(tauvariant, 100 *
                                                 scipy.stats.kendalltau(per_instance_image_text, human_scores, variant=tauvariant)[0], nan_policy='omit'))
-
-    if model_name == 'first' and args.stage == 'train':
-        torch.save(model, 'FirstCLIP.pt')
 
 
 def main(args):
@@ -195,7 +185,5 @@ if __name__ == '__main__':
                                                                          "thumb", "pascal", "composite", "flickr8k-cf", "flickr30k", "mscoco"], type=str)
     parser.add_argument('--model', default='dn',
                         choices=['regular', 'dn', 'regular_ref', 'dn_ref', 'bleu1', 'bleu4', 'cider'], type=str)
-    parser.add_argument('--stage', default='eval',
-                        choices=['train', 'eval'], type=str)
     args = parser.parse_args()
     main(args)

@@ -1,4 +1,8 @@
+'''
+Put the paths to your datasets here.
+'''
 from pathlib import Path
+
 IMAGE_CAPTION_METRICS = '/share/cuvl/image_caption_metrics'
 CIFAR100_DIR = '/share/cuvl/image_caption_metrics/cifar-100-python'
 IMAGENET1K_DIR = Path('/share/cuvl/image_caption_metrics/imagenet-1k')

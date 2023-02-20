@@ -248,31 +248,6 @@ def get_clip_score(model, images, captions, device, refs=None):
     return np.mean(per), per, captions
 
 
-def get_full_clip_score(model, images, captions, device):
-    '''
-    get standard image-text clipscore.
-    images can either be:
-    - a list of strings specifying filepaths for images
-    - a precomputed, ordered matrix of image features
-    '''
-    image_features = torch.Tensor(extract_all_images(
-        images, model.clip, device, num_workers=1)).to(device)
-    text_features = torch.Tensor(extract_all_captions(
-        captions, model.clip, device, num_workers=1)).to(device)
-    num_samples = len(image_features)
-    similarities = torch.sum(
-        image_features * text_features, dim=1)
-    image_text = image_features @ text_features.T
-
-    similarities = similarities.reshape(num_samples, 1)
-    print((similarities - image_text).size())
-    per = torch.mean(torch.exp(similarities - image_text), dim=1)
-    per = per + torch.mean(torch.exp(similarities - image_text.T), dim=1)
-    # per = 0 - per
-    per = per.cpu().numpy()
-    return np.mean(per), per, captions
-
-
 def get_clip_score_ref(model, images, captions, references, device):
     '''
     get reference-based image-text clipscore variants.
