@@ -1,5 +1,5 @@
-import clipscore
-from clipscore import extract_all_captions, extract_all_images
+import clip
+from clip import extract_all_captions, extract_all_images
 from torchmetrics import Accuracy
 import torch
 import numpy as np
@@ -63,9 +63,9 @@ def main(args):
 
     # load model
     if args.model == 'dn':
-        model = clipscore.DNCLIPScore()
+        model = clip.DNclip()
     elif args.model == 'regular':
-        model = clipscore.OriginalCLIPScore()
+        model = clip.Originalclip()
     model.to(device)
 
     print('====> Doing Retrieval')
@@ -97,7 +97,7 @@ def compute_retrieval(model, images, refs, device, verbose=True):
     image_features = extract_all_images(images, model.clip, device).to(device)
     text_features = extract_all_captions(
         all_refs, model.clip, device).to(device)
-    if isinstance(model, clipscore.DNCLIPScore):
+    if isinstance(model, clip.DNclip):
         image_features = image_features - 0.25 * \
             torch.mean(image_features, dim=0)
         text_features = text_features - 0.25*torch.mean(text_features, dim=0)

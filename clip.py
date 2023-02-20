@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import tqdm
-from dataset import *
+from utils import *
 from torch.nn.functional import cosine_similarity
 from transformers import CLIPModel
 
