@@ -18,7 +18,7 @@ import sys
 import random
 import other_metrics
 from tqdm import tqdm, trange
-from clip_retrieval import compute_retrieval
+# from clip_retrieval import compute_retrieval
 from clipscore import Pascal50sDataset
 from dataset_paths import *
 
@@ -128,21 +128,18 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                           str(image).rjust(12, '0')+'.jpg')
             refs.append(captions)
 
-    if model_name in ['bleu4', 'bleu1', 'cider']:
-        pass
-
-    else:
-        if model_name == 'dn' or model_name == 'dn_ref':
-            model = clipscore.DNCLIPScore()
-        elif model_name == 'regular' or model_name == 'regular_ref':
-            model = clipscore.OriginalCLIPScore()
-        model.to(device)
-        if args.dataset == "mscoco":
-            ckpt_name = "cocoCLIP"
-        elif args.dataset == "flickr30k":
-            ckpt_name = "flickr30Clip"
-        print(f"Loaded ckpt {ckpt_name}")
-        model.clip = torch.load(f'{ckpt_name}.pt')
+    if model_name == 'dn' or model_name == 'dn_ref':
+        model = clipscore.DNCLIPScore()
+    elif model_name == 'regular' or model_name == 'regular_ref':
+        model = clipscore.OriginalCLIPScore()
+    model.to(device)
+    
+    if args.dataset == "mscoco":
+        ckpt_name = "cocoCLIP"
+    elif args.dataset == "flickr30k":
+        ckpt_name = "flickr30Clip"
+    print(f"Loaded ckpt {ckpt_name}")
+    model.clip = torch.load(f'{ckpt_name}.pt')
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
