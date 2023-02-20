@@ -82,7 +82,7 @@ class CLIPImageCaptionDataset(torch.utils.data.Dataset):
         c_data = self.data[idx]
         image = Image.open(c_data)
         image = self.preprocess(image)
-        c_data = clip.tokenize(
+        c_data = clip_score.tokenize(
             self.prefix + self.captions[idx], truncate=True).squeeze()
         return {'image': image, 'caption': c_data, 'human_score': self.human_scores[idx]}
 

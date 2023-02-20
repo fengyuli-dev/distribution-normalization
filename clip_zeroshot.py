@@ -1,12 +1,3 @@
-'''
-Code for clip (https://arxiv.org/abs/2104.08718)
-@inproceedings{hessel2021clip,
-  title={{clip:} A Reference-free Evaluation Metric for Image Captioning},
-  author={Hessel, Jack and Holtzman, Ari and Forbes, Maxwell and Bras, Ronan Le and Choi, Yejin},
-  booktitle={EMNLP},
-  year={2021}
-}
-'''
 import argparse
 import clip
 import torch
@@ -25,7 +16,7 @@ import wandb
 import scipy
 import random
 import os
-import clip
+import clip_score
 import json
 from torchmetrics import Accuracy
 import os

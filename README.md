@@ -83,13 +83,13 @@ CLIPScore Tau-c: 51.443
 ```
 To run image captioning metrics experiments with CLIP + Distribution Normalization on Flickr8k-expert, run
 ```
-> python compute_metrics.py --dataset flickr8k-expert --model regular
+> python compute_metrics.py --dataset flickr8k-expert --model dn
 ...
 flickr8k-expert
 Loaded 16992 images
 266it [02:18,  1.93it/s]
 CLIPScore Tau-c: 54.341
-'''
+```
 
 
 

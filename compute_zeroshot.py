@@ -8,7 +8,8 @@ import random
 import warnings
 from pathlib import Path
 
-import clip
+import clip_score
+from utils import *
 import numpy as np
 import pandas as pd
 import scipy
@@ -28,10 +29,11 @@ LAMBDA = 0.25
 def zeroshot_prediction(model, images, val_images, captions, labels, device, args):
     model.eval().to(device)
     clip = model.clip
+    print(type(clip))
     clip.to(device)
-    image_embeddings = clip.extract_all_images(
+    image_embeddings = extract_all_images(
         images, clip, device, normalize=False).cpu()
-    caption_embeddings = clip.extract_all_captions(
+    caption_embeddings = extract_all_captions(
         captions, clip, device, normalize=False).cpu()
     top1s = []
     top5s = []
@@ -42,7 +44,7 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
         if args.dn:
             # randomly sample args.num_samples images from the validation set
             # to estimate the mean
-            val_embeddings = clip.extract_all_images(
+            val_embeddings = extract_all_images(
                 random.sample(val_images, args.num_samples), clip, device, normalize=False).cpu()
             # perforrm distribution normalization
             _image_embeddings = image_embeddings - \
@@ -69,7 +71,7 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
 
 def main(args):
     print(f'{args.dataset} (Zero-shot Accuracy)')
-    model = clip.Originalclip()
+    model = clip_score.OriginalCLIPScore()
     model.to(device)
 
     images = []

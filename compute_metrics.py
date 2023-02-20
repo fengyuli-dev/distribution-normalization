@@ -7,7 +7,7 @@ import os
 import warnings
 from pathlib import Path
 
-import clip
+import clip_score
 import numpy as np
 import other_metrics
 import scipy.stats
@@ -121,15 +121,15 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             refs.append(captions)
 
     if model_name == 'dn' or model_name == 'dn_ref':
-        model = clip.DNCLIPScore()
+        model = clip_score.DNCLIPScore()
     elif model_name == 'regular' or model_name == 'regular_ref':
-        model = clip.OriginalCLIPScore()
+        model = clip_score.OriginalCLIPScore()
     model.to(device)
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
         hc_acc, hi_acc, hm_acc, mm_acc, mean = \
-            clip.get_clip_score_pascal(model, device, get_ref_score)
+            clip_score.get_clip_score_pascal(model, device, get_ref_score)
     else:
         if model_name in ['bleu1', 'bleu4', 'cider']:
             per_instance_image_text = []
@@ -141,10 +141,10 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             print(len(per_instance_image_text))
         elif not 'ref' in model_name:
             # print('Using get clip score')
-            _, per_instance_image_text, candidate_feats = clip.get_clip_score(
+            _, per_instance_image_text, candidate_feats = clip_score.get_clip_score(
                 model, images, candidates, device, refs)
         else:
-            _, per_instance_image_text, candidate_feats = clip.get_clip_score_ref(
+            _, per_instance_image_text, candidate_feats = clip_score.get_clip_score_ref(
                 model, images, candidates, refs, device)
         print('CLIPScore Tau-{}: {:.3f}'.format(tauvariant, 100 *
                                                 scipy.stats.kendalltau(per_instance_image_text, human_scores, variant=tauvariant)[0], nan_policy='omit'))
