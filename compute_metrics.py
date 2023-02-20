@@ -127,21 +127,18 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                           str(image).rjust(12, '0')+'.jpg')
             refs.append(captions)
 
-    if model_name in ['bleu4', 'bleu1', 'cider']:
-        pass
-
-    else:
-        if model_name == 'dn' or model_name == 'dn_ref':
-            model = clipscore.DNCLIPScore()
-        elif model_name == 'regular' or model_name == 'regular_ref':
-            model = clipscore.OriginalCLIPScore()
-        model.to(device)
-        if args.dataset == "mscoco":
-            ckpt_name = "cocoCLIP"
-        elif args.dataset == "flickr30k":
-            ckpt_name = "flickr30Clip"
-        print(f"Loaded ckpt {ckpt_name}")
-        model.clip = torch.load(f'{ckpt_name}.pt')
+    if model_name == 'dn' or model_name == 'dn_ref':
+        model = clipscore.DNCLIPScore()
+    elif model_name == 'regular' or model_name == 'regular_ref':
+        model = clipscore.OriginalCLIPScore()
+    model.to(device)
+    
+    if args.dataset == "mscoco":
+        ckpt_name = "cocoCLIP"
+    elif args.dataset == "flickr30k":
+        ckpt_name = "flickr30Clip"
+    print(f"Loaded ckpt {ckpt_name}")
+    model.clip = torch.load(f'{ckpt_name}.pt')
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
@@ -171,7 +168,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
 
 
 def main(args):
-    print(f'{args.dataset} (Tau-c)')
+    print(f'{args.dataset}')
     if args.dataset == 'flickr8k-expert':
         compute_human_correlation(args.model, f'{FLICKR8K_DIR}/flickr8k.json',
                                   f'{FLICKR8K_DIR}/', tauvariant='c', args=args)
@@ -181,19 +178,12 @@ def main(args):
     elif args.dataset == 'pascal':
         compute_human_correlation(args.model, f'{PASCAL_DIR}/pascal50S.mat',
                                   str(PASCAL_DIR), 'pascal', args=args)
-    elif args.dataset == 'composite':
-        compute_human_correlation(
-            args.model, None, None, 'composite', tauvariant='c', args=args)
-
     elif args.dataset == 'flickr8k-cf':
         compute_human_correlation(
             args.model, f'{FLICKR8K_DIR}/crowdflower_flickr8k.json', f'{FLICKR8K_DIR}/', tauvariant='b', args=args)
-
-    # dummy arguments
     elif args.dataset == 'flickr30k':
         compute_human_correlation(
             args.model, None, None, 'flickr30k', tauvariant='c', args=args)
-
     elif args.dataset == 'mscoco':
         compute_human_correlation(
             args.model, None, None, 'mscoco', tauvariant='c', args=args)
