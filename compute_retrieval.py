@@ -7,7 +7,6 @@ import torch.nn.functional as F
 import argparse
 import warnings
 import json
-from pathlib import Path
 from dataset_paths import *
 
 
@@ -68,9 +67,6 @@ def main(args):
     elif args.model == 'regular':
         model = clipscore.OriginalCLIPScore()
     model.to(device)
-
-    # TODO
-    model.clip = torch.load(f'{ckpt_name}.pt')
 
     print('====> Doing Retrieval')
     compute_retrieval(model, images, refs, device)

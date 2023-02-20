@@ -50,12 +50,12 @@ To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k
 > python compute_retrieval.py --dataset flickr30k --model regular
 ...
 ====> Doing Retrieval
-Top-1 Accuracy (Text->Image): 0.8745999932289124
-Top-5 Accuracy (Text->Image): 0.9796000123023987
-Top-10 Accuracy (Text->Image): 0.9940000176429749
-Top-1 Accuracy (Image->Text): 0.9470000267028809
-Top-5 Accuracy (Image->Text): 0.9950000047683716
-Top-10 Accuracy (Image->Text): 0.9980000257492065
+Top-1 Accuracy (Text->Image): 0.6272000074386597
+Top-5 Accuracy (Text->Image): 0.8596000075340271
+Top-10 Accuracy (Text->Image): 0.9196000099182129
+Top-1 Accuracy (Image->Text): 0.8130000233650208
+Top-5 Accuracy (Image->Text): 0.949999988079071
+Top-10 Accuracy (Image->Text): 0.9850000143051147
 ```
 
 To run retrieval experiments with CLIP + Distribution Normalization on the 1K test split of Flickr30k, run
@@ -63,12 +63,12 @@ To run retrieval experiments with CLIP + Distribution Normalization on the 1K te
 > python compute_retrieval.py --dataset flickr30k --model dn
 ...
 ====> Doing Retrieval
-Top-1 Accuracy (Text->Image): 0.8740000128746033
-Top-5 Accuracy (Text->Image): 0.9801999926567078
-Top-10 Accuracy (Text->Image): 0.9940000176429749
-Top-1 Accuracy (Image->Text): 0.9490000009536743
-Top-5 Accuracy (Image->Text): 0.9950000047683716
-Top-10 Accuracy (Image->Text): 0.9980000257492065
+Top-1 Accuracy (Text->Image): 0.6481999754905701
+Top-5 Accuracy (Text->Image): 0.8744000196456909
+Top-10 Accuracy (Text->Image): 0.930400013923645
+Top-1 Accuracy (Image->Text): 0.8360000252723694
+Top-5 Accuracy (Image->Text): 0.9610000252723694
+Top-10 Accuracy (Image->Text): 0.9850000143051147
 ```
 
 ## Reproduce image captioning metric results

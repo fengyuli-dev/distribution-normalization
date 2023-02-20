@@ -18,7 +18,6 @@ import sys
 import random
 import other_metrics
 from tqdm import tqdm, trange
-from clip_retrieval import compute_retrieval
 from clipscore import Pascal50sDataset
 from dataset_paths import *
 
