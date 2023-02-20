@@ -172,7 +172,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
 
 
 def main(args):
-    print(f'{args.dataset} (Tau-c)')
+    print(f'{args.dataset}')
     if args.dataset == 'flickr8k-expert':
         compute_human_correlation(args.model, f'{FLICKR8K_DIR}/flickr8k.json',
                                   f'{FLICKR8K_DIR}/', tauvariant='c', args=args)
@@ -182,19 +182,12 @@ def main(args):
     elif args.dataset == 'pascal':
         compute_human_correlation(args.model, f'{PASCAL_DIR}/pascal50S.mat',
                                   str(PASCAL_DIR), 'pascal', args=args)
-    elif args.dataset == 'composite':
-        compute_human_correlation(
-            args.model, None, None, 'composite', tauvariant='c', args=args)
-
     elif args.dataset == 'flickr8k-cf':
         compute_human_correlation(
             args.model, f'{FLICKR8K_DIR}/crowdflower_flickr8k.json', f'{FLICKR8K_DIR}/', tauvariant='b', args=args)
-
-    # dummy arguments
     elif args.dataset == 'flickr30k':
         compute_human_correlation(
             args.model, None, None, 'flickr30k', tauvariant='c', args=args)
-
     elif args.dataset == 'mscoco':
         compute_human_correlation(
             args.model, None, None, 'mscoco', tauvariant='c', args=args)
