@@ -20,14 +20,7 @@ import other_metrics
 from tqdm import tqdm, trange
 from clip_retrieval import compute_retrieval
 from clipscore import Pascal50sDataset
-
-
-IMAGE_CAPTION_METRICS = Path('/share/cuvl/image_caption_metrics')
-FLICKR8K_DIR = Path(IMAGE_CAPTION_METRICS, 'flickr8k')
-FLICKR30K_DIR = Path(IMAGE_CAPTION_METRICS, 'flickr30k')
-MSCOCO_DIR = Path(IMAGE_CAPTION_METRICS, 'MSCOCO_VAL2014')
-COMPOSITE_DIR = Path(IMAGE_CAPTION_METRICS, 'composite')
-PASCAL_DIR = Path(IMAGE_CAPTION_METRICS, 'pascal')
+from dataset_paths import *
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"

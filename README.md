@@ -47,7 +47,7 @@ Top-5 STD: 0.03878027945756912
 ## Replicate Retrieval results
 To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k, run
 ```
-> python compute_metrics.py --dataset flickr30k --model regular --retrieval
+> python compute_retrieval.py --dataset flickr30k --model regular
 ...
 ====> Doing Retrieval
 Top-1 Accuracy (Text->Image): 0.8745999932289124
@@ -60,7 +60,7 @@ Top-10 Accuracy (Image->Text): 0.9980000257492065
 
 To run retrieval experiments with CLIP + Distribution Normalization on the 1K test split of Flickr30k, run
 ```
-> python compute_metrics.py --dataset flickr30k --model first --retrieval
+> python compute_retrieval.py --dataset flickr30k --model dn
 ...
 ====> Doing Retrieval
 Top-1 Accuracy (Text->Image): 0.8740000128746033
