@@ -41,7 +41,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
     human_scores = []
     refs = []
 
-
     # load flickr8k-expert dataset
     if dataset == 'flickr8k-expert':
         data = {}
@@ -136,13 +135,11 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                           str(image).rjust(12, '0')+'.jpg')
             refs.append(captions)
 
-    print(len(images))
-
     if model_name in ['bleu4', 'bleu1', 'cider']:
         pass
 
     else:
-        if model_name == 'first' or model_name == 'first_ref':
+        if model_name == 'dn' or model_name == 'dn_ref':
             model = clipscore.DNCLIPScore()
         elif model_name == 'regular' or model_name == 'regular_ref':
             model = clipscore.OriginalCLIPScore()
@@ -153,11 +150,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             ckpt_name = "flickr30Clip"
         print(f"Loaded ckpt {ckpt_name}")
         model.clip = torch.load(f'{ckpt_name}.pt')
-
-        if args.retrieval:
-            print('====> Doing Retrieval')
-            compute_retrieval(model, images, refs, device)
-            return
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
@@ -219,10 +211,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', default="flickr8k-expert", choices=["flickr8k-expert",
                                                                          "thumb", "pascal", "composite", "flickr8k-cf", "flickr30k", "mscoco"], type=str)
-    parser.add_argument('--model', default='first',
-                        choices=['regular', 'first', 'regular_ref', 'first_ref', 'bleu1', 'bleu4', 'cider'], type=str)
+    parser.add_argument('--model', default='dn',
+                        choices=['regular', 'dn', 'regular_ref', 'dn_ref', 'bleu1', 'bleu4', 'cider'], type=str)
     parser.add_argument('--stage', default='eval',
                         choices=['train', 'eval'], type=str)
-    parser.add_argument('--retrieval', action='store_true', default='False')
     args = parser.parse_args()
     main(args)
