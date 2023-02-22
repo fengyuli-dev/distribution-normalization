@@ -191,11 +191,13 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', default="flickr8k-expert", choices=["flickr8k-expert",
-                                                                         "thumb", "pascal", "composite", "flickr8k-cf", "flickr30k", "mscoco"], type=str)
+    parser.add_argument('--dataset', default="flickr8k-expert", 
+                        choices=["flickr8k-expert","thumb", "pascal", "flickr8k-cf", "flickr30k", "mscoco"], type=str)
     parser.add_argument('--model', default='dn',
                         choices=['regular', 'dn', 'regular_ref', 'dn_ref', 'bleu1', 'bleu4', 'cider'], type=str)
     parser.add_argument('--stage', default='eval',
                         choices=['train', 'eval'], type=str)
+    parser.add_argument('--num_samples', default=100, type=int)
+    parser.add_argument('--num_experiments', default=5, type=int)
     args = parser.parse_args()
     main(args)

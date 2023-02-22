@@ -31,7 +31,7 @@ from torchmetrics import Accuracy
 import os
 
 
-# the coefficient for distribution normalization
+# the coefficient for distribution normalization used in our paper
 LAMBDA = 0.25
 
 
