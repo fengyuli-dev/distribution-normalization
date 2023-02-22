@@ -12,6 +12,7 @@ import tqdm
 from utils import *
 from torch.nn.functional import cosine_similarity
 from transformers import CLIPModel
+LAMBDA = .25
 
 
 class OriginalCLIPScore(nn.Module):
@@ -43,16 +44,10 @@ class DNCLIPScore(nn.Module):
         text_features = self.clip.get_text_features(text)
         image_features = F.normalize(image_features)
         text_features = F.normalize(text_features)
-        similarity = cosine_similarity(image_features, text_features)
-        image_cali = torch.sum(text_features * self.image_constant, dim=1)
-        text_cali = torch.sum(image_features*self.text_constant, dim=1)
-        return torch.exp((similarity - image_cali)/self.tau) + torch.exp((similarity - text_cali)/self.tau)
-
-    def forward_fast(self, image_features, text_features):
-        similarity = cosine_similarity(image_features, text_features)
-        image_cali = torch.sum(text_features * self.image_constant, dim=1)
-        text_cali = torch.sum(image_features*self.text_constant, dim=1)
-        return torch.exp((similarity - image_cali)/self.tau) + torch.exp((similarity - text_cali)/self.tau)
+        image_features = image_features - LAMBDA*self.image_constant
+        text_features = text_features - LAMBDA*self.text_constant
+        similarity = torch.sum(image_features * text_features, dim=1)
+        return similarity
 
 
 def get_clip_score(model, images, captions, device, refs=None):
