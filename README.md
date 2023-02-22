@@ -84,7 +84,7 @@ To run image captioning metrics experiments with CLIP + Distribution Normalizati
 flickr8k-expert
 Loaded 16992 images
 266it [02:18,  1.93it/s]
-CLIPScore Tau-c: 54.341
+CLIPScore Tau-c: 53.210
 ```
 
 
