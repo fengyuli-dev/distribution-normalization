@@ -1,12 +1,3 @@
-'''
-Code for CLIPScore (https://arxiv.org/abs/2104.08718)
-@inproceedings{hessel2021clipscore,
-  title={{CLIPScore:} A Reference-free Evaluation Metric for Image Captioning},
-  author={Hessel, Jack and Holtzman, Ari and Forbes, Maxwell and Bras, Ronan Le and Choi, Yejin},
-  booktitle={EMNLP},
-  year={2021}
-}
-'''
 import argparse
 import clip
 import torch
@@ -25,7 +16,7 @@ import wandb
 import scipy
 import random
 import os
-import clipscore
+import clip_score
 import json
 from torchmetrics import Accuracy
 import os
@@ -39,9 +30,9 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
     model.eval().to(device)
     clip = model.clip
     clip.to(device)
-    image_embeddings = clipscore.extract_all_images(
+    image_embeddings = clip.extract_all_images(
         images, clip, device, normalize=False).cpu()
-    caption_embeddings = clipscore.extract_all_captions(
+    caption_embeddings = clip.extract_all_captions(
         captions, clip, device, normalize=False).cpu()
     top1s = []
     top5s = []
@@ -49,7 +40,7 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
         _image_embeddings = image_embeddings
         _caption_embeddings = caption_embeddings
         if args.model == 'first':
-            val_embeddings = clipscore.extract_all_images(
+            val_embeddings = clip.extract_all_images(
                 random.sample(val_images, args.num_samples), clip, device, normalize=False).cpu()
             _image_embeddings = image_embeddings - \
                 torch.mean(val_embeddings, dim=0).cpu()*LAMBDA

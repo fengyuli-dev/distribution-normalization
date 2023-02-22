@@ -74,15 +74,22 @@ Top-10 Accuracy (Image->Text): 0.9850000143051147
 ## Replicate image captioning metric results
 To run image captioning metrics experiments with Vanilla CLIP on Flickr8k-expert, run
 ```
-> python compute_metrics.py --dataset flickr8k-expert --model dn
+> python compute_metrics.py --dataset flickr8k-expert --model regular
 ...
-cifar100 (Zero-shot Accuracy)
-Top-1 Accuracy: 63.909996032714844
-Top-1 STD: 3.814697265625e-06
-Top-5 Accuracy: 88.70000457763672
-Top-5 STD: 0.0
+flickr8k-expert
+Loaded 16992 images
+266it [02:18,  1.92it/s]
+CLIPScore Tau-c: 51.443
 ```
 To run image captioning metrics experiments with CLIP + Distribution Normalization on Flickr8k-expert, run
+```
+> python compute_metrics.py --dataset flickr8k-expert --model dn
+...
+flickr8k-expert
+Loaded 16992 images
+266it [02:18,  1.93it/s]
+CLIPScore Tau-c: 54.341
+```
 
 
 

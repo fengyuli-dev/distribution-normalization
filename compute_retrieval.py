@@ -1,3 +1,9 @@
+import clip_score
+from utils import *
+from torchmetrics import Accuracy
+import torch
+import numpy as np
+import torch.nn.functional as F
 import argparse
 import json
 import os
@@ -119,9 +125,7 @@ def main(args):
     if args.dn:
         model = clipscore.DNCLIPScore()
     else:
-        print("HERE")
         model = clipscore.OriginalCLIPScore()
-    model.to(device)
 
     print('====> Doing Retrieval')
     compute_retrieval(model, images, refs, dev_images, dev_refs, device, args)
@@ -156,6 +160,7 @@ def compute_retrieval(model, images, refs, dev_images, dev_refs, device, args):
     else:
         print("Text to Image")
 
+
     top1s = []
     top5s = []
     top10s = []
@@ -172,7 +177,7 @@ def compute_retrieval(model, images, refs, dev_images, dev_refs, device, args):
                 torch.mean(dev_image_features, dim=0)
             _text_features = _text_features - LAMBDA * \
                 torch.mean(dev_text_features, dim=0)
-                
+
         sim = (_text_features @ _image_features.T).cpu()
         if args.image_to_text:
             sim = sim.T

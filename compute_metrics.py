@@ -1,26 +1,19 @@
 '''
 Evaluate model performance as an image captioning metric.
 '''
-from pathlib import Path
-import seaborn as sns
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
-import pandas as pd
 import argparse
-import warnings
-import torch
-import numpy as np
 import json
 import os
-import scipy.stats
-import clipscore
-import sys
-import random
-import other_metrics
-from tqdm import tqdm, trange
-from clipscore import Pascal50sDataset
-from dataset_paths import *
+import warnings
+from pathlib import Path
 
+import clip_score
+import numpy as np
+import other_metrics
+import scipy.stats
+import torch
+from dataset_paths import *
+from utils import Pascal50sDataset
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if device == 'cpu':
@@ -38,7 +31,6 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
         data = {}
         with open(input_json) as f:
             data.update(json.load(f))
-        print('Loaded {} images'.format(len(data)))
         for k, v in list(data.items()):
             for human_judgement in v['human_judgement']:
                 if np.isnan(human_judgement['rating']):
@@ -48,6 +40,7 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
                 candidates.append(' '.join(human_judgement['caption'].split()))
                 human_scores.append(human_judgement['rating'])
                 refs.append([' '.join(gt.split()) for gt in v['ground_truth']])
+        print('Loaded {} images'.format(len(images)))
 
     # load thumb dataset
     elif dataset == 'thumb':
@@ -128,22 +121,15 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             refs.append(captions)
 
     if model_name == 'dn' or model_name == 'dn_ref':
-        model = clipscore.DNCLIPScore()
+        model = clip_score.DNCLIPScore()
     elif model_name == 'regular' or model_name == 'regular_ref':
-        model = clipscore.OriginalCLIPScore()
+        model = clip_score.OriginalCLIPScore()
     model.to(device)
-    
-    if args.dataset == "mscoco":
-        ckpt_name = "cocoCLIP"
-    elif args.dataset == "flickr30k":
-        ckpt_name = "flickr30Clip"
-    print(f"Loaded ckpt {ckpt_name}")
-    model.clip = torch.load(f'{ckpt_name}.pt')
 
     if dataset == 'pascal':
         get_ref_score = "ref" in model_name
         hc_acc, hi_acc, hm_acc, mm_acc, mean = \
-            clipscore.get_clip_score_pascal(model, device, get_ref_score)
+            clip_score.get_clip_score_pascal(model, device, get_ref_score)
     else:
         if model_name in ['bleu1', 'bleu4', 'cider']:
             per_instance_image_text = []
@@ -155,16 +141,13 @@ def compute_human_correlation(model_name, input_json, image_directory, dataset='
             print(len(per_instance_image_text))
         elif not 'ref' in model_name:
             # print('Using get clip score')
-            _, per_instance_image_text, candidate_feats = clipscore.get_clip_score(
+            _, per_instance_image_text, candidate_feats = clip_score.get_clip_score(
                 model, images, candidates, device, refs)
         else:
-            _, per_instance_image_text, candidate_feats = clipscore.get_clip_score_ref(
+            _, per_instance_image_text, candidate_feats = clip_score.get_clip_score_ref(
                 model, images, candidates, refs, device)
         print('CLIPScore Tau-{}: {:.3f}'.format(tauvariant, 100 *
                                                 scipy.stats.kendalltau(per_instance_image_text, human_scores, variant=tauvariant)[0], nan_policy='omit'))
-
-    if model_name == 'first' and args.stage == 'train':
-        torch.save(model, 'FirstCLIP.pt')
 
 
 def main(args):
@@ -199,5 +182,4 @@ if __name__ == '__main__':
                         choices=['train', 'eval'], type=str)
     parser.add_argument('--num_samples', default=100, type=int)
     parser.add_argument('--num_experiments', default=5, type=int)
-    args = parser.parse_args()
-    main(args)
+    main(parser.parse_args())

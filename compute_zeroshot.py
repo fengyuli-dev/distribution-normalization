@@ -1,20 +1,23 @@
 '''
 Compute zeroshot classifications using CLIP w/ and w/o distribution normalization
 '''
-from pathlib import Path
-import pandas as pd
 import argparse
-import warnings
-import torch
-import numpy as np
 import json
-import scipy
 import os
-import clipscore
-import torch.nn.functional as F
-from dataset_paths import IMAGENET1K_DIR, IMAGE_CAPTION_METRICS, CIFAR100_DIR, SUN397_DIR, STANFORDCARS_DIR
-from torchmetrics import Accuracy
 import random
+import warnings
+from pathlib import Path
+
+import clip_score
+from utils import *
+import numpy as np
+import pandas as pd
+import scipy
+import torch
+import torch.nn.functional as F
+from dataset_paths import (CIFAR100_DIR, IMAGE_CAPTION_METRICS, IMAGENET1K_DIR,
+                           STANFORDCARS_DIR, SUN397_DIR)
+from torchmetrics import Accuracy
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 if device == 'cpu':
@@ -26,10 +29,11 @@ LAMBDA = 0.25
 def zeroshot_prediction(model, images, val_images, captions, labels, device, args):
     model.eval().to(device)
     clip = model.clip
+    print(type(clip))
     clip.to(device)
-    image_embeddings = clipscore.extract_all_images(
+    image_embeddings = extract_all_images(
         images, clip, device, normalize=False).cpu()
-    caption_embeddings = clipscore.extract_all_captions(
+    caption_embeddings = extract_all_captions(
         captions, clip, device, normalize=False).cpu()
     top1s = []
     top5s = []
@@ -40,7 +44,7 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
         if args.dn:
             # randomly sample args.num_samples images from the validation set
             # to estimate the mean
-            val_embeddings = clipscore.extract_all_images(
+            val_embeddings = extract_all_images(
                 random.sample(val_images, args.num_samples), clip, device, normalize=False).cpu()
             # perforrm distribution normalization
             _image_embeddings = image_embeddings - \
@@ -67,7 +71,7 @@ def zeroshot_prediction(model, images, val_images, captions, labels, device, arg
 
 def main(args):
     print(f'{args.dataset} (Zero-shot Accuracy)')
-    model = clipscore.OriginalCLIPScore()
+    model = clip_score.OriginalCLIPScore()
     model.to(device)
 
     images = []
