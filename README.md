@@ -45,30 +45,26 @@ Top-5 STD: 0.03878027945756912
 
 
 ## Replicate Retrieval results
-To run retrieval experiments with Vanilla CLIP on the 1K test split of Flickr30k, run
+To run image-to-text retrieval with Vanilla CLIP on the 1K test split of Flickr30k (using 100 random validation samples to estimate distribution mean, repeated 5 times), run
 ```
-> python compute_retrieval.py --dataset flickr30k --model regular
+> python compute_retrieval.py --dataset flickr30k --num_samples 100 --num_experiments 5 --image_to_text
 ...
 ====> Doing Retrieval
-Top-1 Accuracy (Text->Image): 0.6272000074386597
-Top-5 Accuracy (Text->Image): 0.8596000075340271
-Top-10 Accuracy (Text->Image): 0.9196000099182129
-Top-1 Accuracy (Image->Text): 0.8130000233650208
-Top-5 Accuracy (Image->Text): 0.949999988079071
-Top-10 Accuracy (Image->Text): 0.9850000143051147
+Image to Text
+
 ```
 
-To run retrieval experiments with CLIP + Distribution Normalization on the 1K test split of Flickr30k, run
+To run image-to-text retrieval with CLIP + Distribution Normalization on the 1K test split of Flickr30k (using 100 random validation samples to estimate distribution mean, repeated 5 times), run
 ```
-> python compute_retrieval.py --dataset flickr30k --model dn
+> python compute_retrieval.py --dataset flickr30k --num_samples 100 --num_experiments 5 --dn --image_to_text
 ...
 ====> Doing Retrieval
-Top-1 Accuracy (Text->Image): 0.6481999754905701
-Top-5 Accuracy (Text->Image): 0.8744000196456909
-Top-10 Accuracy (Text->Image): 0.930400013923645
-Top-1 Accuracy (Image->Text): 0.8360000252723694
-Top-5 Accuracy (Image->Text): 0.9610000252723694
-Top-10 Accuracy (Image->Text): 0.9850000143051147
+Top-1 Accuracy: 83.58000183105469
+Top-1 Std 0.22271032631397247
+Top-5 Accuracy: 96.14000701904297
+Top-5 Std 0.04898904636502266
+Top-10 Accuracy: 98.52000427246094
+Top-10 Std 0.09797809273004532
 ```
 
 ## Replicate image captioning metric results
