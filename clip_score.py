@@ -56,7 +56,7 @@ def get_clip_score(model, images, captions, device, refs=None):
     images can either be:
     - a list of strings specifying filepaths for images
     - a precomputed, ordered matrix of image features
-    # '''
+    '''
     if isinstance(model, DNCLIPScore):
         image_features = torch.Tensor(extract_all_images(
             images, model.clip, device, num_workers=1)).cpu()

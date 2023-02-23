@@ -16,8 +16,8 @@ import torch
 import torch.nn.functional as F
 from torchmetrics import Accuracy
 
-import clipscore
-from clipscore import extract_all_captions, extract_all_images
+import clip_score
+from clip_score import extract_all_captions, extract_all_images
 from dataset_paths import *
 
 # the coefficient for distribution normalization used in our paper
@@ -57,8 +57,7 @@ def main(args):
                             if '[' in s:
                                 continue
                             else:
-                                processed.append(
-                                    s.replace(']', '').replace('\n', ''))
+                                processed.append(s.replace(']', '').replace('\n', ''))
                         ref.append(' '.join(processed))
                 refs.append(ref)
         for image in all_images:
@@ -123,10 +122,11 @@ def main(args):
 
     # load model
     if args.dn:
-        model = clipscore.DNCLIPScore()
+        model = clip_score.DNCLIPScore()
     else:
-        model = clipscore.OriginalCLIPScore()
-
+        model = clip_score.OriginalCLIPScore()
+    
+    model.to(device)
     print('====> Doing Retrieval')
     compute_retrieval(model, images, refs, dev_images, dev_refs, device, args)
 
