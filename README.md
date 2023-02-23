@@ -51,7 +51,12 @@ To run image-to-text retrieval with Vanilla CLIP on the 1K test split of Flickr3
 ...
 ====> Doing Retrieval
 Image to Text
-
+Top-1 Accuracy: 81.30000305175781
+Top-1 Std 0.0
+Top-5 Accuracy: 95.0
+Top-5 Std 0.0
+Top-10 Accuracy: 98.5
+Top-10 Std 0.0
 ```
 
 To run image-to-text retrieval with CLIP + Distribution Normalization on the 1K test split of Flickr30k (using 100 random validation samples to estimate distribution mean, repeated 5 times), run
@@ -59,6 +64,7 @@ To run image-to-text retrieval with CLIP + Distribution Normalization on the 1K 
 > python compute_retrieval.py --dataset flickr30k --num_samples 100 --num_experiments 5 --dn --image_to_text
 ...
 ====> Doing Retrieval
+Image to Text
 Top-1 Accuracy: 83.58000183105469
 Top-1 Std 0.22271032631397247
 Top-5 Accuracy: 96.14000701904297
