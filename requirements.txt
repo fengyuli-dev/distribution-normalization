@@ -10,7 +10,7 @@ Pillow==9.4.0
 pycocoevalcap==1.2
 requests==2.28.1
 scikit_learn==1.2.1
-scipy==1.7.3
+scipy==1.10.0
 seaborn==0.12.2
 torch==1.13.1
 torchmetrics==0.11.0
