@@ -1,3 +1,5 @@
+## :tada: Our paper will appear on NeurIPS 2023!
+
 ## About
 This is the code for our paper "Distribution Normalization: An Effortless Test-Time Augmentation for Contrastively Learned Visual-Language Models". Distribution Normalization is simple enough to be easily incorporated into existing CLIP-based architectures with a few lines of code, and significantly improves the alignment of image and text representations of CLIP and its later variants. In our paper, we show that our proposed distribution normalization improves the performances in a wide range of visual-language alignment tasks, including cross-modal retrieval, zeroshot classification, and image caption evaluations. We provide examples to recreate our results below.
 
