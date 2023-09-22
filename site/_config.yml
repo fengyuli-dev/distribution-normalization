@@ -7,3 +7,4 @@ buttons:
   Video: 'https://arxiv.org/abs/2210.08607'
   Slides: 'https://arxiv.org/abs/2210.08607'
 theme: jekyll-theme-cayman
+remote_theme: jekyll-theme-cayman
