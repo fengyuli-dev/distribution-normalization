@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models | A NeurIPS 2023 Paper by</title>
+<meta name="generator" content="Jekyll v4.3.2" />
+<meta property="og:title" content="Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A NeurIPS 2023 Paper by" />
+<meta property="og:description" content="A NeurIPS 2023 Paper by" />
+<link rel="canonical" href="http://localhost:4000/" />
+<meta property="og:url" content="http://localhost:4000/" />
+<meta property="og:site_name" content="Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"A NeurIPS 2023 Paper by","headline":"Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models","name":"Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models","url":"http://localhost:4000/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style" type="text/css" crossorigin>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="/assets/css/style.css?v=">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+    <header class="page-header" role="banner">
+      <h1 class="project-name">Distribution Normalization: An “Effortless” Test-Time Augmentation for Contrastively Learned Visual-language Models</h1>
+      <h2 class="project-tagline"><span>A NeurIPS 2023 Paper by</span><br></h2>
+      <h2 class="project-tagline" style="position: relative; top: -12pt">Yifei Zhou*, Juntao Ren*, Fengyu Li*, Ramin Zabih, Sernam Lim</h2>
+      
+        <a href="https://arxiv.org/abs/2210.08607" class="btn">arXiv</a>
+      
+        <a href="https://github.com/fengyuli-dev/distribution-normalization" class="btn">Code</a>
+      
+        <a href="https://arxiv.org/abs/2210.08607" class="btn">Poster</a>
+      
+        <a href="https://arxiv.org/abs/2210.08607" class="btn">Video</a>
+      
+        <a href="https://arxiv.org/abs/2210.08607" class="btn">Slides</a>
+      
+    </header>
+
+    <section class="main-content">
+      <p align="center">
+    <img src="images/intro.png" alt="Image" />
+</p>
+
+<h3 id="abstract">Abstract</h3>
+
+<p>Advances in the field of visual-language contrastive learning have made it possible for many downstream applications to be carried out efficiently and accurately by simply taking the dot product between image and text representations. One of the most representative approaches proposed recently known as CLIP (Radford et al., 2021) has quickly garnered widespread adoption due to its effectiveness. CLIP is trained with an InfoNCE loss that takes into account both positive and negative samples to help learn a much more robust representation space. This paper however reveals that the common downstream practice of taking a dot product is only a zeroth-order approximation of the optimization goal, resulting in a loss of information during test-time. Intuitively, since the model has been optimized based on the InfoNCE loss, test-time procedures should ideally also be in alignment. The question lies in how one can retrieve any semblance of negative samples information during inference. We propose Distribution Normalization (DN), where we approximate the mean representation of a batch of test samples and use such a mean to represent what would be analogous to negative samples in the InfoNCE loss. DN requires no retraining or fine-tuning and can be effortlessly applied during inference. Extensive experiments on a wide variety of downstream tasks exhibit a clear advantage of DN over the dot product. Our code is available at <a href="https://github.com/fengyuli-dev/distribution-normalization">https://github.com/fengyuli-dev/distribution-normalization</a>.</p>
+
+<h3 id="authors">Authors</h3>
+
+<div>
+<div style="text-align: left;">
+
+<div class="person">
+  <img src="assets/faces/vindula.png" width="140" /><br />
+  <a href="https://vindulamj.github.io/web/">Yifei Zhou*</a><br />
+  <span>EECS, UCB</span>
+</div>
+
+<div class="person">
+  <img src="assets/faces/catherine.png" width="140" /><br />
+  <a href="https://www.linkedin.com/in/catherine-tang-76699a193/">Juntao Ren*</a><br />
+  <span>Undergrad, Cornell</span>
+</div>
+
+<div class="person">
+  <img src="assets/faces/sirui.png" width="140" /><br />
+  <a href="https://idss.mit.edu/staff/sirui-li/">Fengyu Li*</a><br />
+  <span>Undergrad, Cornell</span>
+</div>
+
+<div class="person">
+  <img src="assets/faces/dajiang.png" width="140" /><br />
+  <a href="https://www.linkedin.com/in/dajiang-suo-7701a666/">Ramin Zabih</a><br />
+  <span>CS, Cornell</span>
+</div>
+
+<div class="person">
+  <img src="assets/faces/cathy.png" width="140" /><br />
+  <a href="http://www.wucathy.com/blog/">Sernam Lim</a><br />
+  <span>Meta</span>
+</div>
+
+</div></div>
+<p>* indicates equal contribution.</p>
+
+<h3 id="citation">Citation</h3>
+
+<p>Need change after we update paper version on arXiv.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@misc{zhou2023distribution,
+      title={Distribution Normalization: An "Effortless" Test-Time Augmentation for Contrastively Learned Visual-language Models}, 
+      author={Yifei Zhou and Juntao Ren and Fengyu Li and Ramin Zabih and Ser-Nam Lim},
+      year={2023},
+      eprint={2302.11084},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+</code></pre></div></div>
+
+<!-- Text can be **bold**, _italic_, or ~~strikethrough~~.
+
+[Link to another page](./another-page.html).
+
+There should be whitespace between paragraphs.
+
+There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+
+# Header 1
+
+This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+
+## Header 2
+
+> This is a blockquote following a header.
+>
+> When something is important enough, you do it even if the odds are not in your favor.
+
+### Header 3
+
+```js
+// Javascript code with syntax highlighting.
+var fun = function lang(l) {
+  dateformat.i18n = require('./lang/' + l)
+  return true;
+}
+```
+
+```ruby
+# Ruby code with syntax highlighting
+GitHubPages::Dependencies.gems.each do |gem, version|
+  s.add_dependency(gem, "= #{version}")
+end
+```
+
+#### Header 4
+
+*   This is an unordered list following a header.
+*   This is an unordered list following a header.
+*   This is an unordered list following a header.
+
+##### Header 5
+
+1.  This is an ordered list following a header.
+2.  This is an ordered list following a header.
+3.  This is an ordered list following a header.
+
+###### Header 6
+
+| head1        | head two          | three |
+|:-------------|:------------------|:------|
+| ok           | good swedish fish | nice  |
+| out of stock | good and plenty   | nice  |
+| ok           | good `oreos`      | hmm   |
+| ok           | good `zoute` drop | yumm  |
+
+### There's a horizontal rule below this.
+
+* * *
+
+### Here is an unordered list:
+
+*   Item foo
+*   Item bar
+*   Item baz
+*   Item zip
+
+### And an ordered list:
+
+1.  Item one
+1.  Item two
+1.  Item three
+1.  Item four
+
+### And a nested list:
+
+- level 1 item
+  - level 2 item
+  - level 2 item
+    - level 3 item
+    - level 3 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+  - level 2 item
+- level 1 item
+  - level 2 item
+  - level 2 item
+- level 1 item
+
+### Small image
+
+![Octocat](https://github.githubassets.com/images/icons/emoji/octocat.png)
+
+### Large image
+
+![Branching](https://guides.github.com/activities/hello-world/branching.png)
+
+
+### Definition lists can be used with HTML syntax.
+
+<dl>
+<dt>Name</dt>
+<dd>Godzilla</dd>
+<dt>Born</dt>
+<dd>1952</dd>
+<dt>Birthplace</dt>
+<dd>Japan</dd>
+<dt>Color</dt>
+<dd>Green</dd>
+</dl>
+
+```
+Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
+```
+
+```
+The final element.
+``` -->
+
+    </section>
+  </body>
+</html>

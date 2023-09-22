@@ -1,0 +1,20 @@
+- name: Yifei Zhou*
+  image: assets/faces/vindula.png
+  title: EECS, UCB
+  url: https://vindulamj.github.io/web/
+- name: Juntao Ren*
+  image: assets/faces/catherine.png
+  title: Undergrad, Cornell
+  url: https://www.linkedin.com/in/catherine-tang-76699a193/
+- name: Fengyu Li*
+  image: assets/faces/sirui.png
+  title: Undergrad, Cornell
+  url: https://idss.mit.edu/staff/sirui-li/
+- name: Ramin Zabih
+  image: assets/faces/dajiang.png
+  title: CS, Cornell
+  url: https://www.linkedin.com/in/dajiang-suo-7701a666/
+- name: Sernam Lim
+  image: assets/faces/cathy.png
+  title: Meta
+  url: http://www.wucathy.com/blog/
