@@ -135,7 +135,7 @@ def get_clip_score_ref(model, images, captions, references, device):
     per = np.array(per)
     text_per = np.array(text_per)
     if isinstance(model, DNCLIPScore):
-        per = per + .5 * text_per
+        per = per + .25 * text_per
     else:
         per = 2 * per * text_per / (per + text_per)
 
