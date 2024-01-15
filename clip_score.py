@@ -58,14 +58,14 @@ def get_clip_score(model, images, captions, device, refs=None):
     - a precomputed, ordered matrix of image features
     '''
     if isinstance(model, DNCLIPScore):
-        image_features = torch.Tensor(extract_all_images(
-            images, model.clip, device, num_workers=1)).cpu()
+        image_features = extract_all_images(
+            images, model.clip, device, num_workers=1).cpu()
         model.image_constant = torch.mean(image_features, dim=0).to(device)
         all_refs = []
         for ref in refs:
             all_refs = all_refs + ref
-        text_features = torch.Tensor(extract_all_captions(
-            all_refs, model.clip, device, num_workers=1)).cpu()
+        text_features = extract_all_captions(
+            all_refs, model.clip, device, num_workers=1).cpu()
         model.text_constant = torch.mean(text_features, dim=0).to(device)
     image_data = torch.utils.data.DataLoader(
         CLIPImageDataset(images),
@@ -135,7 +135,7 @@ def get_clip_score_ref(model, images, captions, references, device):
     per = np.array(per)
     text_per = np.array(text_per)
     if isinstance(model, DNCLIPScore):
-        per = per + text_per
+        per = per + .5 * text_per
     else:
         per = 2 * per * text_per / (per + text_per)
 
